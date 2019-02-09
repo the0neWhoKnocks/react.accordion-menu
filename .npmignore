@@ -1,0 +1,13 @@
+# directories
+.coverage
+.jest
+example
+src
+
+# files
+*.log
+.babelrc
+.eslintrc.js
+.gitignore
+webpack.config.js
+yarn.lock
