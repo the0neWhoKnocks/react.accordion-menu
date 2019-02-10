@@ -1,19 +1,45 @@
 import React, { Component } from 'react';
-import { bool, node, number, oneOfType, string } from 'prop-types';
+import { bool, node, number, oneOf, oneOfType, string } from 'prop-types';
 import { css } from 'emotion';
 import { transitionEnd } from './utils/prefixTransition';
 import setTransitionState from './utils/setTransitionState';
 import styles, {
-  MODIFIER__IS_AUTO,
-  MODIFIER__IS_CLOSING,
-  MODIFIER__IS_OPENING,
-  MODIFIER__IS_OPEN,
+  MODIFIER__AUTO_HEIGHT,
+  MODIFIER__CLOSING,
+  MODIFIER__ICON__CHEVRON,
+  MODIFIER__ICON__PLUS_MINUS,
+  MODIFIER__ICON__TRIANGLE,
+  MODIFIER__OPEN,
+  MODIFIER__OPENING,
   ROOT_CLASS,
 } from './styles';
 
+export const ICON__CHEVRON = 'chevron';
+export const ICON__NONE = 'none';
+export const ICON__PLUS_MINUS = 'plusMinus';
+export const ICON__TRIANGLE = 'triangle';
 const TRANSITION_TIME = 300;
 
 class AccordionItem extends Component {
+  
+  /**
+   * Determines the icon class that should be applied.
+   *
+   * @param {String} iconType - The type of icon.
+   * @return {String}
+   */
+  static iconModifier(iconType) {
+    let modifier = '';
+    
+    switch(iconType) {
+      case ICON__CHEVRON: modifier = MODIFIER__ICON__CHEVRON; break;
+      case ICON__PLUS_MINUS: modifier = MODIFIER__ICON__PLUS_MINUS; break;
+      case ICON__TRIANGLE: modifier = MODIFIER__ICON__TRIANGLE; break;
+    }
+    
+    return modifier;
+  }
+  
   constructor(props) {
     const {
       children,
@@ -30,7 +56,7 @@ class AccordionItem extends Component {
       contentStyles: undefined,
       transitionDurationClass: css`transition-duration: ${ transitionTime }ms;`,
       opened,
-      transitionClass: (opened) ? MODIFIER__IS_OPEN : '',
+      transitionClass: (opened) ? MODIFIER__OPEN : '',
       uid: uid || (''+performance.now()).replace('.',''),
     };
 
@@ -48,9 +74,9 @@ class AccordionItem extends Component {
    * @return {Number}
    */
   getExpandedHeight() {
-    this.rootRef.classList.add(MODIFIER__IS_AUTO);
+    this.rootRef.classList.add(MODIFIER__AUTO_HEIGHT);
     const height = this.contentRef.offsetHeight;
-    this.rootRef.classList.remove(MODIFIER__IS_AUTO);
+    this.rootRef.classList.remove(MODIFIER__AUTO_HEIGHT);
 
     return height;
   }
@@ -65,7 +91,7 @@ class AccordionItem extends Component {
       contentStyles: {
         height: `${ this.getExpandedHeight() }px`,
       },
-      transitionClass: (checked) ? MODIFIER__IS_OPENING : MODIFIER__IS_CLOSING,
+      transitionClass: (checked) ? MODIFIER__OPENING : MODIFIER__CLOSING,
       opened: checked,
     };
     
@@ -145,13 +171,14 @@ class AccordionItem extends Component {
       contentStyles: {
         height: '',
       },
-      transitionClass: (this.state.opened) ? 'is--open' : '',
+      transitionClass: (this.state.opened) ? MODIFIER__OPEN : '',
     });
   }
 
   render() {
     const {
       className,
+      icon,
       label,
       tabIndex,
     } = this.props;
@@ -186,6 +213,9 @@ class AccordionItem extends Component {
           tabIndex={tabIndex}
         >
           <div className={`${ ROOT_CLASS }__btn-label`}>{label}</div>
+          {icon !== ICON__NONE && (
+            <div className={`${ ROOT_CLASS }__btn-indicator ${ AccordionItem.iconModifier(icon) }`} />
+          )}
         </label>
         <div
           className={`${ ROOT_CLASS }__content ${ transitionDurationClass }`}
@@ -204,6 +234,12 @@ class AccordionItem extends Component {
 AccordionItem.propTypes = {
   children: node,
   className: string,
+  icon: oneOf([
+    ICON__CHEVRON,
+    ICON__NONE,
+    ICON__PLUS_MINUS,
+    ICON__TRIANGLE,
+  ]),
   label: oneOfType([
     node,
     string,
@@ -216,6 +252,7 @@ AccordionItem.propTypes = {
 };
 AccordionItem.defaultProps = {
   className: '',
+  icon: ICON__PLUS_MINUS,
   opened: false,
   tabIndex: 0,
   transitionTime: TRANSITION_TIME,
