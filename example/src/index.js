@@ -3,7 +3,11 @@
 import React, { Component, Fragment } from 'react';
 import { render } from 'react-dom';
 import { string } from 'prop-types';
-import AccordionItem from '../../src';
+import AccordionItem, {
+  ICON__CHEVRON,
+  ICON__NONE,
+  ICON__TRIANGLE,
+} from '../../src';
 import styles from './styles';
 
 const Emoji = ({
@@ -102,7 +106,7 @@ class App extends Component {
           ))}</ul>
         </AccordionItem>
         <AccordionItem
-          label="Nested"
+          label="Nested Children"
         >
           <AccordionItem
             label={
@@ -122,6 +126,28 @@ class App extends Component {
           >
             Yo, sup?
           </AccordionItem>
+        </AccordionItem>
+        <AccordionItem
+          label="Toggle Indicators"
+        >
+          <p>
+            The default indicators are the plus/minus, but you can also choose
+            a <code>chevron</code>, <code>triangle</code>, or <code>none</code>.
+            The nice thing about these indicators is that they use Unicode
+            characters so there&apos;s no extra overhead for font-icons or images.
+          </p>
+          <AccordionItem
+            icon={ICON__CHEVRON}
+            label="Chevron"
+          />
+          <AccordionItem
+            icon={ICON__TRIANGLE}
+            label="Triangle"
+          />
+          <AccordionItem
+            icon={ICON__NONE}
+            label="None"
+          />
         </AccordionItem>
         <AccordionItem
           label="Lazy DOM"
