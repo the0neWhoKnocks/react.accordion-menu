@@ -3,12 +3,16 @@
 import React, { Component, Fragment } from 'react';
 import { render } from 'react-dom';
 import { string } from 'prop-types';
+import Logger from './Logger';
 import AccordionItem, {
   ICON__CHEVRON,
   ICON__NONE,
   ICON__TRIANGLE,
 } from '../../src';
 import styles from './styles';
+
+const DEBUG_NAMESPACE = 'accordion-example';
+const log = new Logger(DEBUG_NAMESPACE);
 
 const Emoji = ({
   label,
@@ -61,11 +65,6 @@ class App extends Component {
       label: `Item ${ ndx + 1 }`,
     }));
     const rootModifier = (!maxHeight) ? 'no--height' : '';
-    
-    // fetch('https://baconipsum.com/api/?type=meat-and-filler')
-    // .then(res => res.json())
-    // .then(response => response.forEach((par) => console.log(par)))
-    // .catch(error => console.error('Error:', error));
     
     return (
       <div className={`${ styles } ${ rootModifier }`}>
@@ -163,9 +162,34 @@ class App extends Component {
             a large tree of data with many nested nodes.
           </p>
         </AccordionItem>
+        <AccordionItem
+          asyncContent={() => {
+            return fetch('https://baconipsum.com/api/?type=meat-and-filler')
+              .then(resp => resp.json())
+              .then(data => {
+                log.info('Async content', data);
+                return (
+                  <Fragment>
+                    <p>
+                      Below is content loaded from <a href="https://baconipsum.com/">baconipsum.com</a>.
+                      The content will be cached until you reload the page.
+                    </p>
+                    { data.map((par, ndx) => <p key={ndx}>{par}</p>) }
+                  </Fragment>
+                );
+              })
+              .catch(error => log.error(error));
+          }}
+          label="Async Content"
+        />
       </div>
     );
   }
 }
+
+// if(process.env.NODE_ENV !== 'production'){
+//   localStorage.setItem('debug', `${ DEBUG_NAMESPACE }:*'`);
+// }
+localStorage.setItem('debug', `${ DEBUG_NAMESPACE }:*`);
 
 render(<App />, document.getElementById('root'));
