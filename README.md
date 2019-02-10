@@ -46,8 +46,13 @@ yarn
 # or
 npm i
 
-# Start dev server
+# Start Webpack dev server
 yarn start
 # or
 npm start
+
+# Start Node server to test SSR
+yarn start:server
+# or
+npm run start:server
 ```
