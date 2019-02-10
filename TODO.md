@@ -5,7 +5,7 @@
 ## Example
 
 - [x] Lazy-load DOM content
-- [ ] Lazy-load network data
+- [x] Lazy-load network data
 - [ ] Has ability to set `opened` on all instances
 - [ ] Shows different label types: string, component, large font, multiline
 - [ ] Customized styling
