@@ -26,7 +26,9 @@ Refer to the [example file](example/src/index.js) for up-to-date usage examples.
 
 | Prop             | Required | Description |
 | ---------------- | -------- | ----------- |
+| `asyncContent`   | No       | A function that returns a `Promise`, whose result returns JSX. |
 | `className`      | No       | A custom class that'll be applied to the root node. |
+| `icon`           | No       | Choice of toggle indicator icons. |
 | `label`          | Yes      | Either a `Component` or a `String` used to label the item. |
 | `lazyDOM`        | No       | Whether or not to add the content to the DOM on mount, or wait until the user chooses to open the item. |
 | `opened`         | No       | Whether or not the item is open on mount. |

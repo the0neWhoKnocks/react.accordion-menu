@@ -1,4 +1,4 @@
-import { css } from 'emotion';
+import { css, keyframes } from 'emotion';
 
 export const ROOT_CLASS = 'accordion-item';
 export const MODIFIER__AUTO_HEIGHT = 'is--auto';
@@ -6,9 +6,19 @@ export const MODIFIER__CLOSING = 'is--closing';
 export const MODIFIER__ICON__CHEVRON = 'is--chevron';
 export const MODIFIER__ICON__PLUS_MINUS = 'is--plus-minus';
 export const MODIFIER__ICON__TRIANGLE = 'is--triangle';
+export const MODIFIER__LOADING = 'is--loading';
 export const MODIFIER__OPENING = 'is--opening';
 export const MODIFIER__OPEN = 'is--open';
 const BTN_COLOR = '#d4d4d4';
+
+const spin = keyframes`
+  from {
+    transform: translateY(-50%) rotate(0deg);
+  }
+  to {
+    transform: translateY(-50%) rotate(360deg);
+  }
+`;
 
 const styles = css`
   position: relative;
@@ -35,12 +45,14 @@ const styles = css`
       &-label {
         font-weight: bold;
         flex: 1 0 0;
+        transition: opacity 200ms;
       }
       
       &-indicator {
         font-weight: bold;
         position: relative;
         pointer-events: none;
+        transition: opacity 200ms;
         
         &::after {
           display: inline-block;
@@ -125,6 +137,36 @@ const styles = css`
       
       &__content {
         height: auto;
+      }
+    }
+  }
+  
+  &.${ MODIFIER__LOADING } {
+    
+    > .${ ROOT_CLASS }__btn {
+      pointer-events: none;
+      
+      &::after {
+        content: '';
+        width: 1em;
+        height: 1em;
+        border: solid 2px rgba(0, 0, 0, 0.25);
+        border-top-color: #000;
+        border-radius: 100%;
+        pointer-events: none;
+        position: absolute;
+        top: 50%;
+        right: 0.25em;
+        transform: translateY(-50%);
+        animation: ${ spin } 500ms linear infinite;
+      }
+      
+      .${ ROOT_CLASS }__btn-label {
+        opacity: 0.3;
+      }
+      
+      .${ ROOT_CLASS }__btn-indicator {
+        opacity: 0;
       }
     }
   }

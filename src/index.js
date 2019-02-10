@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { bool, node, number, oneOf, oneOfType, string } from 'prop-types';
+import { bool, func, node, number, oneOf, oneOfType, string } from 'prop-types';
 import { css } from 'emotion';
 import { transitionEnd } from './utils/prefixTransition';
 import setTransitionState from './utils/setTransitionState';
@@ -9,6 +9,7 @@ import styles, {
   MODIFIER__ICON__CHEVRON,
   MODIFIER__ICON__PLUS_MINUS,
   MODIFIER__ICON__TRIANGLE,
+  MODIFIER__LOADING,
   MODIFIER__OPEN,
   MODIFIER__OPENING,
   ROOT_CLASS,
@@ -42,6 +43,7 @@ class AccordionItem extends Component {
   
   constructor(props) {
     const {
+      asyncContent,
       children,
       lazyDOM,
       opened,
@@ -52,8 +54,9 @@ class AccordionItem extends Component {
     super();
 
     this.state = {
-      content: (lazyDOM && !opened) ? null : children,
+      content: (!opened || asyncContent, lazyDOM) ? null : children,
       contentStyles: undefined,
+      loading: false,
       transitionDurationClass: css`transition-duration: ${ transitionTime }ms;`,
       opened,
       transitionClass: (opened) ? MODIFIER__OPEN : '',
@@ -134,12 +137,35 @@ class AccordionItem extends Component {
         break;
     }
   }
+  
+  /**
+   * Handles loading async content.
+   */
+  handleAsyncContent() {
+    const { asyncContent } = this.props;
+    const promise = asyncContent();
+    
+    if(promise && promise.then){
+      promise.then((children) => {
+        this.setState({
+          content: children,
+          loading: false,
+        }, () => {
+          this.executeTransition(true);
+        });
+      });
+    }
+    else{
+      console.error('`asyncContent` requires a Promise to be returned');
+    }
+  }
 
   /**
    * Handles the toggling of a branch.
    */
   handleToggle() {
     const {
+      asyncContent,
       children,
       lazyDOM,
     } = this.props;
@@ -148,12 +174,22 @@ class AccordionItem extends Component {
     } = this.state;
     const checked = this.checkboxRef.checked;
     
-    if(checked && lazyDOM && !content){
-      this.setState({
-        content: children,
-      }, () => {
-        this.executeTransition(checked);
-      });
+    if(
+      (checked && !content)
+      && (lazyDOM || asyncContent)
+    ){
+      if(lazyDOM){
+        this.setState({
+          content: children,
+        }, () => {
+          this.executeTransition(checked);
+        });
+      }
+      else if(asyncContent){
+        this.setState({
+          loading: true,
+        }, this.handleAsyncContent);
+      }
     }
     else{
       this.executeTransition(checked);
@@ -185,16 +221,18 @@ class AccordionItem extends Component {
     const {
       content,
       contentStyles,
+      loading,
       transitionDurationClass,
       opened,
       transitionClass,
       uid,
     } = this.state;
     const _uid = `${ ROOT_CLASS }_${ uid }`;
+    const rootModifier = (loading) ? MODIFIER__LOADING : '';
 
     return (
       <div 
-        className={`${ ROOT_CLASS } ${ styles } ${ transitionClass } ${ className }`}
+        className={`${ ROOT_CLASS } ${ styles } ${ transitionClass } ${ className } ${ rootModifier }`}
         ref={(ref) => { this.rootRef = ref; }}
       >
         <input
@@ -232,6 +270,7 @@ class AccordionItem extends Component {
 }
 
 AccordionItem.propTypes = {
+  asyncContent: func,
   children: node,
   className: string,
   icon: oneOf([
