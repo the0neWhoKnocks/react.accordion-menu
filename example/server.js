@@ -1,89 +1,102 @@
 /* eslint-disable require-jsdoc-except/require-jsdoc */
 
+const { exists, readFile, readFileSync } = require('fs');
+const { join, normalize, parse, resolve } = require('path');
 const http = require('http');
+const url = require('url');
 const React = require('react');
-const {
-  renderToStaticMarkup,
-  // renderToString,
-} = require('react-dom/server');
+const { renderToString } = require('react-dom/server');
+const { renderStylesToString } = require('emotion-server');
+const { cache } = require('emotion');
+const { CacheProvider } = require('@emotion/core');
+const App = require('./src/App').default;
+const template = require('./src/template').default;
 
+const STATIC_DIR = 'dist';
 const port = +process.env.PORT || 3001;
-
-const App = (props) => (
-  <div>Hello World!!</div>
-);
-
-const handleRootRequest = (res) => {
-  res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  
-  // renderToString(App(props))
-  const html = renderToStaticMarkup(
-    <body>
-      <App />
-    </body>
-  );
-
-  res.end(html);
+const mimeTypes = {
+  '.css': 'text/css',
+  '.eot': 'appliaction/vnd.ms-fontobject',
+  '.ico': 'image/x-icon',
+  '.jpg': 'image/jpeg',
+  '.js': 'text/javascript',
+  '.json': 'application/json',
+  '.png': 'image/png',
+  '.svg': 'image/svg+xml',
+  '.ttf': 'aplication/font-sfnt',
 };
 
-const handle404 = (res) => {
-  res.statusCode = 404;
-  res.end();
+const handleRootRequest = (res) => {
+  const bundleScripts = JSON.parse(readFileSync(
+    resolve(__dirname, './dist/manifest.json'),
+    'utf8'
+  ));
+  
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.end(template({
+    bundleScripts: Object.keys(bundleScripts).map(
+      (key) => `${ STATIC_DIR }/${ bundleScripts[key] }`
+    ),
+    rootContent: renderStylesToString(
+      renderToString(
+        <CacheProvider value={cache}>
+          <App />
+        </CacheProvider>
+      )
+    ),
+  }));
+};
+
+const handleStaticFile = (res, file) => {
+  exists(file, (exist) => {
+    if(!exist) {
+      handleError(res, 404, `File ${ file } not found!`);
+      return;
+    }
+
+    // read file from file system
+    readFile(file, (err, data) => {
+      if(err){
+        handleError(res, 500, `Error reading file: ${ err }.`);
+      }
+      else{
+        // based on the URL path, extract the file extention. e.g. .js, .doc, ...
+        const ext = parse(file).ext;
+        // if the file is found, set Content-type and send data
+        res.setHeader('Content-type', mimeTypes[ext] || 'text/plain' );
+        res.end(data);
+      }
+    });
+  });
+};
+
+const handleError = (res, code, msg) => {
+  res.statusCode = code;
+  res.end(msg);
 };
 
 http.createServer((req, res) => {
-  console.log('--', req.url);
+  // extract URL path
+  // Avoid https://en.wikipedia.org/wiki/Directory_traversal_attack
+  // e.g curl --path-as-is http://localhost:9000/../fileInDanger.txt
+  // by limiting the path to current directory only
+  const cleanPath = normalize( url.parse(req.url).pathname ).replace(/^(\.\.[/\\])+/, '');
   
-  switch(req.url){
-    case '/':
-      handleRootRequest(res);
-      break;
-    
-    default:
-      console.log('Unhandled request:', req.url);
-      handle404(res);
+  // root path
+  if( cleanPath === '/' ){
+    handleRootRequest(res);
   }
-
-  // if (req.url === '/bundle.js') {
-  // 
-  //   res.setHeader('Content-Type', 'text/javascript')
-  // 
-  //   // If we've already bundled, send the cached result
-  //   if (BUNDLE != null) {
-  //     return res.end(BUNDLE)
-  //   }
-  // 
-  //   // Otherwise, invoke browserify to package up browser.js and everything it requires.
-  //   // We also use literalify to transform our `require` statements for React
-  //   // so that it uses the global variable (from the CDN JS file) instead of
-  //   // bundling it up with everything else
-  //   browserify()
-  //     .add('./browser.js')
-  //     .transform(literalify.configure({
-  //       'react': 'window.React',
-  //       'react-dom': 'window.ReactDOM',
-  //       'react-dom-factories': 'window.ReactDOMFactories',
-  //       'create-react-class': 'window.createReactClass',
-  //     }))
-  //     .bundle(function(err, buf) {
-  //       // Now we can cache the result and serve this up each time
-  //       BUNDLE = buf
-  //       res.statusCode = err ? 500 : 200
-  //       res.end(err ? err.message : BUNDLE)
-  //     })
-  // }
+  // file request
+  else if( /\.[a-z]{2,4}/.test(cleanPath) ){
+    handleStaticFile(res, join(__dirname, cleanPath));
+  }
+  // everything else
+  else{
+    console.log('Unhandled request:', req.url);
+    handleError(res, 404, 'Page Not Found');
+  }
 })
   .listen(port, (err) => {
     if(err) throw err;
     console.log(`Server running at http://localhost:${ port }/`);
   });
-
-
-// // A utility function to safely escape JSON for embedding in a <script> tag
-// function safeStringify(obj) {
-//   return JSON.stringify(obj)
-//     .replace(/<\/(script)/ig, '<\\/$1')
-//     .replace(/<!--/g, '<\\!--')
-//     .replace(/\u2028/g, '\\u2028') // Only necessary if interpreting as JS, which we do
-//     .replace(/\u2029/g, '\\u2029') // Ditto
-// }

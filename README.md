@@ -22,7 +22,7 @@ npm i @noxx/react-accordion-menu
 
 ## Usage
 
-Refer to the [example file](example/src/index.js) for up-to-date usage examples.
+Refer to the [example file](example/src/App.js) for up-to-date usage examples.
 
 | Prop             | Required | Description |
 | ---------------- | -------- | ----------- |
@@ -34,7 +34,7 @@ Refer to the [example file](example/src/index.js) for up-to-date usage examples.
 | `opened`         | No       | Whether or not the item is open on mount. |
 | `tabIndex`       | No       | Index for keyboard navigation. |
 | `transitionTime` | No       | How long (in milliseconds) it takes for an item to open or close. |
-| `uid`            | No       | A unique ID used to link up the markup and functionality. It defaults to `performance.now()` but I wouldn't recommend that for a production setting. |
+| `uid`            | No       | A unique ID used to link up the markup and functionality. It defaults to `performance.now()` but I wouldn't recommend that for a production setting. If you are rendering server-side you'll need to provide `uid`s if you're running an older version of Node, and to ensure that the markup matches up during hydration. |
 
 ---
 

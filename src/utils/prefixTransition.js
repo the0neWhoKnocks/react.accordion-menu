@@ -27,7 +27,9 @@ const getTransition = (prefixes) => {
   return prefix;
 };
 
-const transitionEnd = getTransition(endPrefixes);
+const transitionEnd = (typeof window !== 'undefined')
+  ? getTransition(endPrefixes)
+  : '';
 
 export {
   transitionEnd,
