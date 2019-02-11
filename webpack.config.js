@@ -1,5 +1,6 @@
 const { resolve } = require('path');
 const webpack = require('webpack');
+const WebpackAssetsManifest = require('webpack-assets-manifest');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const SimpleProgressWebpackPlugin = require('simple-progress-webpack-plugin');
@@ -77,7 +78,16 @@ module.exports = {
      */
     new HtmlWebpackPlugin({
       filename: 'index.html',
-      template: resolve(__dirname, './example/src/index.html'),
+      template: resolve(__dirname, './example/src/template.js'),
+    }),
+    /**
+     * Generate a manifest file which contains a mapping of all asset filenames
+     * to their corresponding output file so that tools can load them without
+     * having to know the hashed name.
+     */
+    new WebpackAssetsManifest({
+      sortManifest: false,
+      writeToDisk: true,
     }),
     /**
      * Provides build progress in the CLI

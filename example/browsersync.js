@@ -2,7 +2,6 @@ const browserSync = require('browser-sync').create();
 const nodemon = require('nodemon');
 
 const port = +process.env.PORT || 8080;
-let firstLoadComplete = false;
 
 nodemon({
   execMap: {
@@ -10,13 +9,11 @@ nodemon({
   },
   script: './example/server.js',
 })
-  .on('start', () => {
-    if(firstLoadComplete) {
-      console.log('nodemon restarted, refresh browser');
-      browserSync.reload();
-    }
-    
-    firstLoadComplete = true;
+  .on('restart', () => {
+    console.log('nodemon restarted, refresh browser');
+    // TODO - not sure why `setTimeout` is needed now. May be because of
+    // synchronous file actions for server (reading manifest).
+    setTimeout(() => { browserSync.reload(); }, 1000);
   });
 
 browserSync.init({
