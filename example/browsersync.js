@@ -7,12 +7,19 @@ nodemon({
   execMap: {
     js: 'babel-node',
   },
+  // this file will have `babel-node` run on it
   script: './example/server.js',
+  watch: [
+    // WP bundled new code
+    './example/dist/manifest.json',
+    // The server has updated
+    './example/server.js',
+  ],
 })
   .on('restart', () => {
     console.log('nodemon restarted, refresh browser');
     // TODO - not sure why `setTimeout` is needed now. May be because of
-    // synchronous file actions for server (reading manifest).
+    // synchronous file actions for server (reading the manifest.json).
     setTimeout(() => { browserSync.reload(); }, 1000);
   });
 

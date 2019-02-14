@@ -1,9 +1,9 @@
 const { resolve } = require('path');
 const webpack = require('webpack');
 const WebpackAssetsManifest = require('webpack-assets-manifest');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const SimpleProgressWebpackPlugin = require('simple-progress-webpack-plugin');
+const TidyPlugin = require('@noxx/webpack-tidy-plugin');
 
 const HASH_LENGTH = 5;
 const OUTPUT_DIR = 'example/dist';
@@ -16,15 +16,6 @@ const stats = {
 };
 
 module.exports = {
-  devServer: {
-    clientLogLevel: 'none', // kill client socket logs
-    compress: true, // gzips responses
-    headers: {
-      'Cache-Control': 'max-age=60000', // allow for images to be cached to truly validate caching and loading
-    },
-    port: 3001,
-    stats: stats,
-  },
   entry: {
     example: resolve(__dirname, './example/src/index.js'),
     module: resolve(__dirname, './src/index.js'),
@@ -62,10 +53,9 @@ module.exports = {
     devtoolModuleFilenameTemplate: info => resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
   },
   plugins: [
-    new CleanWebpackPlugin([
-      `${ OUTPUT_DIR }/*.*`,
-    ], {
-      
+    new TidyPlugin({
+      cleanOutput: true,
+      hashLength: HASH_LENGTH,
     }),
     /**
      * Gives more control of how bundles are hashed
