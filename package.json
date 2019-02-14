@@ -5,18 +5,19 @@
   "main": "cjs/index.js",
   "module": "esm/index.js",
   "scripts": {
-    "build": "BABEL_ENV=cjs webpack --mode production",
     "deploy": "gh-pages -d ./example/dist",
     "lint": "eslint ./src/**/*.js",
-    "prepublishOnly": "npm run transpile && npm run build && npm run deploy",
-    "start": "BABEL_ENV=cjs webpack-dev-server --mode development",
-    "start:server": "npm run build && cross-env BABEL_ENV=cjs PORT=9000 node ./example/browsersync",
+    "prepublishOnly": "npm run transpile && npm run wp:build && npm run deploy",
+    "start": "npm run wp:watch & npm run start:server",
+    "start:server": "cross-env BABEL_ENV=cjs PORT=9000 node ./example/browsersync",
     "test": "npm run lint && npm run unit",
     "transpile": "npm run transpile:cjs && npm run transpile:esm",
     "transpile:cjs": "cross-env BABEL_ENV=cjs babel ./src -d cjs --copy-files",
     "transpile:esm": "cross-env BABEL_ENV=esm babel ./src -d esm --copy-files",
     "unit": "cross-env BABEL_ENV=cjs jest --env=jsdom --config ./.jest/conf.jest.js",
-    "unit:watch": "npm run unit -- --watchAll"
+    "unit:watch": "npm run unit -- --watchAll",
+    "wp:build": "BABEL_ENV=cjs webpack --mode production",
+    "wp:watch": "BABEL_ENV=cjs webpack --mode development --watch"
   },
   "repository": {
     "type": "git",
@@ -38,6 +39,7 @@
   "devDependencies": {
     "@emotion/core": "^10.0.7",
     "@noxx/eslint-config": "^1.0.7",
+    "@noxx/webpack-tidy-plugin": "^2.0.2",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-loader": "7",
@@ -45,7 +47,6 @@
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
     "browser-sync": "^2.26.3",
-    "clean-webpack-plugin": "^1.0.1",
     "cross-env": "^5.2.0",
     "debug": "^4.1.1",
     "emotion": "^10.0.7",
@@ -63,7 +64,6 @@
     "simple-progress-webpack-plugin": "^1.1.2",
     "webpack": "^4.24.0",
     "webpack-assets-manifest": "^3.1.1",
-    "webpack-cli": "^3.1.2",
-    "webpack-dev-server": "^3.1.10"
+    "webpack-cli": "^3.1.2"
   }
 }
