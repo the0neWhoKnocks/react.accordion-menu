@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { bool, func, node, number, oneOf, oneOfType, string } from 'prop-types';
 import { css } from 'emotion';
-import { transitionEnd } from './utils/prefixTransition';
-import setTransitionState from './utils/setTransitionState';
+import { transitionEnd } from 'UTILS/prefixTransition';
+import setTransitionState from 'UTILS/setTransitionState';
 import styles, {
   MODIFIER__AUTO_HEIGHT,
   MODIFIER__CLOSING,

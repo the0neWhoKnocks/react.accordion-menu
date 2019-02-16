@@ -1,4 +1,5 @@
 const { resolve } = require('path');
+const repoConf = require('../conf.repo');
 
 const JEST = resolve(__dirname);
 const ROOT = resolve(JEST, '../');
@@ -36,5 +37,10 @@ const conf = {
   testURL: 'http://localhost',
   timers: 'fake',
 };
+
+// map Webpack alias' so files resolve
+Object.keys(repoConf.webpack.aliases).forEach((alias) => {
+  conf.moduleNameMapper[`^${ alias }(.*)$`] = `${ repoConf.webpack.aliases[alias] }/$1`;
+});
 
 module.exports = conf;

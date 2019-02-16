@@ -4,6 +4,7 @@ const WebpackAssetsManifest = require('webpack-assets-manifest');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const SimpleProgressWebpackPlugin = require('simple-progress-webpack-plugin');
 const TidyPlugin = require('@noxx/webpack-tidy-plugin');
+const repoConf = require('./conf.repo');
 
 const HASH_LENGTH = 5;
 const OUTPUT_DIR = 'example/dist';
@@ -15,7 +16,7 @@ const stats = {
   modules: false,
 };
 
-module.exports = {
+const conf = {
   entry: {
     example: resolve(__dirname, './example/src/index.js'),
     module: resolve(__dirname, './src/index.js'),
@@ -87,7 +88,16 @@ module.exports = {
     }),
   ],
   resolve: {
+    alias: {},
     extensions: ['.js'],
   },
   stats: stats,
 };
+
+// Add paths to webpack as alias'. This will allow us to `import` or `require` a
+// path via a constant rather than having to use `../../etc/`.
+for(let alias in repoConf.webpack.aliases){
+  conf.resolve.alias[alias] = repoConf.webpack.aliases[alias];
+}
+
+module.exports = conf;

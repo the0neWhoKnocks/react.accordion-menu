@@ -4,6 +4,9 @@
   env: {
     cjs: {
       plugins: [
+        ['webpack-alias', {
+          config: './webpack.config.js',
+        }],
         'emotion',
       ],
       presets: [
