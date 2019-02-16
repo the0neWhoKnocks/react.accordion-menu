@@ -7,6 +7,7 @@ export const MODIFIER__ICON__CHEVRON = 'is--chevron';
 export const MODIFIER__ICON__PLUS_MINUS = 'is--plus-minus';
 export const MODIFIER__ICON__TRIANGLE = 'is--triangle';
 export const MODIFIER__LOADING = 'is--loading';
+export const MODIFIER__NO_SCRIPT = 'no--script';
 export const MODIFIER__OPENING = 'is--opening';
 export const MODIFIER__OPEN = 'is--open';
 const BTN_COLOR = '#d4d4d4';
@@ -19,6 +20,29 @@ const spin = keyframes`
     transform: translateY(-50%) rotate(360deg);
   }
 `;
+
+const indicatorRules = `
+.${ ROOT_CLASS }__btn {
+  
+  .${ ROOT_CLASS }__btn-indicator {
+    
+    &.${ MODIFIER__ICON__CHEVRON } {
+      transform: rotate(90deg);
+    }
+    
+    &.${ MODIFIER__ICON__PLUS_MINUS } {
+      &::after {
+        content: '\\2212'; // minus
+      }
+    }
+    
+    &.${ MODIFIER__ICON__TRIANGLE } {
+      transform: scale(-1);
+    }
+  }
+}
+`;
+
 
 const styles = css`
   position: relative;
@@ -131,6 +155,30 @@ const styles = css`
     }
   }
   
+  &.${ MODIFIER__NO_SCRIPT } {
+    
+    > .${ ROOT_CLASS } {
+      
+      &__content {
+        transition: none;
+        
+        > .${ ROOT_CLASS }__content-body {
+          transform: none;
+        }
+      }
+      
+      &__checkbox:checked {
+          
+        ~ .${ ROOT_CLASS }__content {
+          height: auto;
+          visibility: visible !important;
+        }
+        
+        ~ ${ indicatorRules }
+      }
+    }
+  }
+  
   &.${ MODIFIER__AUTO_HEIGHT } {
     
     > .${ ROOT_CLASS } {
@@ -174,25 +222,7 @@ const styles = css`
   &.${ MODIFIER__OPENING },
   &.${ MODIFIER__OPEN } {
     
-    > .${ ROOT_CLASS }__btn {
-      
-      .${ ROOT_CLASS }__btn-indicator {
-        
-        &.${ MODIFIER__ICON__CHEVRON } {
-          transform: rotate(90deg);
-        }
-        
-        &.${ MODIFIER__ICON__PLUS_MINUS } {
-          &::after {
-            content: '\\2212'; // minus
-          }
-        }
-        
-        &.${ MODIFIER__ICON__TRIANGLE } {
-          transform: scale(-1);
-        }
-      }
-    }
+    > ${ indicatorRules }
     
     > .${ ROOT_CLASS }__content > .${ ROOT_CLASS }__content-body {
       transform: translateY(0%);
