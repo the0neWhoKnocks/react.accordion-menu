@@ -14,6 +14,7 @@
 - [ ] `disabled`: Don't add toggle listeners, gray out icon, remove pointer style.
 - [ ] Have accordion items work on their own, but orchestratable by an
       accordion component that can limit how many items are open at a time.
+
 ---
 
 ## Research

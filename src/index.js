@@ -10,6 +10,7 @@ import styles, {
   MODIFIER__ICON__PLUS_MINUS,
   MODIFIER__ICON__TRIANGLE,
   MODIFIER__LOADING,
+  MODIFIER__NO_SCRIPT,
   MODIFIER__OPEN,
   MODIFIER__OPENING,
   ROOT_CLASS,
@@ -57,14 +58,29 @@ class AccordionItem extends Component {
       content: (!opened || asyncContent, lazyDOM) ? null : children,
       contentStyles: undefined,
       loading: false,
-      transitionDurationClass: css`transition-duration: ${ transitionTime }ms;`,
       opened,
-      transitionClass: (opened) ? MODIFIER__OPEN : '',
+      rootModifier: MODIFIER__NO_SCRIPT,
+      transitionClass: '',
+      transitionDurationClass: css`transition-duration: ${ transitionTime }ms;`,
       uid: uid || (''+performance.now()).replace('.',''),
     };
 
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleToggle = this.handleToggle.bind(this);
+  }
+  
+  componentDidMount() { this.init(); }
+  
+  /**
+   * Initializes the component after DOM load
+   */
+  init() {
+    const { opened } = this.state;
+    
+    this.setState({
+      rootModifier: '',
+      transitionClass: (opened) ? MODIFIER__OPEN : '',
+    });
   }
 
   /**
@@ -222,17 +238,20 @@ class AccordionItem extends Component {
       content,
       contentStyles,
       loading,
+      rootModifier,
       transitionDurationClass,
       opened,
       transitionClass,
       uid,
     } = this.state;
     const _uid = `${ ROOT_CLASS }_${ uid }`;
-    const rootModifier = (loading) ? MODIFIER__LOADING : '';
+    let _rootModifier = rootModifier;
+    
+    if(loading) _rootModifier += ` ${ MODIFIER__LOADING }`;
 
     return (
       <div 
-        className={`${ ROOT_CLASS } ${ styles } ${ transitionClass } ${ className } ${ rootModifier }`}
+        className={`${ ROOT_CLASS } ${ styles } ${ transitionClass } ${ className } ${ _rootModifier }`}
         ref={(ref) => { this.rootRef = ref; }}
       >
         <input
