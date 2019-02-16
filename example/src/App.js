@@ -7,7 +7,7 @@ import AccordionItem, {
   ICON__CHEVRON,
   ICON__NONE,
   ICON__TRIANGLE,
-} from '../../src';
+} from 'COMPONENTS/AccordionItem';
 import styles from './styles';
 
 export const DEBUG_NAMESPACE = 'accordion-example';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import setTransitionState from './utils/setTransitionState';
-import { transitionEnd } from './utils/prefixTransition';
+import setTransitionState from 'UTILS/setTransitionState';
+import { transitionEnd } from 'UTILS/prefixTransition';
 import Accordion from './index';
 import styles, {
   MODIFIER__IS_CLOSING,
@@ -9,7 +9,7 @@ import styles, {
   MODIFIER__IS_OPEN,
 } from './styles';
 
-jest.mock('./utils/setTransitionState');
+jest.mock('UTILS/setTransitionState');
 
 describe('Accordion', () => {
   let wrapper;
