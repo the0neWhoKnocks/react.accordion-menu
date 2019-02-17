@@ -14,6 +14,9 @@
 - [ ] `disabled`: Don't add toggle listeners, gray out icon, remove pointer style.
 - [ ] Have accordion items work on their own, but orchestratable by an
       accordion component that can limit how many items are open at a time.
+- [x] Items can still open and close when JS is disabled (when rendered) server-side.
+- [x] noscript message for async item content - "Sorry, this content can only be
+      viewed when Javascript is enabled".
 
 ---
 
