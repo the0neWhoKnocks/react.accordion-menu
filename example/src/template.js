@@ -3,7 +3,13 @@ export default ({
   rootContent,
 }) => {
   const noscriptMsg = (!rootContent)
-    ? '<noscript>You need to enable JavaScript to view this example.</noscript>'
+    ? `<noscript>
+        <div>
+          You need to enable JavaScript to view this example. Or you can clone
+          this repo and start up the Development server to view server-side
+          rendered content or noscript behavior.
+        </div>
+      </noscript>`
     : '';
   const _rootContent = (rootContent)
     ? rootContent
@@ -32,13 +38,20 @@ export default ({
           font-weight: bold;
           text-align: center;
           padding: 1em;
-          background: #ff4800;
+          background: #005180;
           position: absolute;
           top: 50%;
           left: 0;
           right: 0;
           transform: translateY(-50%);
           z-index: 10;
+        }
+        body > noscript > div {
+          width: 80%;
+          color: #fff;
+          text-align: left;
+          text-shadow: 0px 2px 2px #000;
+          display: inline-block;
         }
         code {
           padding: 0.1em 0.5em;
