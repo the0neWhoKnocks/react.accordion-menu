@@ -75,7 +75,7 @@ const handleError = (res, code, msg) => {
   res.end(msg);
 };
 
-http.createServer((req, res) => {
+const requestHandler = (req, res) => {
   // extract URL path
   // Avoid https://en.wikipedia.org/wiki/Directory_traversal_attack
   // e.g curl --path-as-is http://localhost:9000/../fileInDanger.txt
@@ -95,7 +95,10 @@ http.createServer((req, res) => {
     console.log('Unhandled request:', req.url);
     handleError(res, 404, 'Page Not Found');
   }
-})
+};
+
+http
+  .createServer(requestHandler)
   .listen(port, (err) => {
     if(err) throw err;
     console.log(`Server running at http://localhost:${ port }/`);

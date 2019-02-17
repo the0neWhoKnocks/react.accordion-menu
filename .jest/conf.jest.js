@@ -38,9 +38,4 @@ const conf = {
   timers: 'fake',
 };
 
-// map Webpack alias' so files resolve
-Object.keys(repoConf.webpack.aliases).forEach((alias) => {
-  conf.moduleNameMapper[`^${ alias }(.*)$`] = `${ repoConf.webpack.aliases[alias] }/$1`;
-});
-
 module.exports = conf;
