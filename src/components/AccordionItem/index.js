@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { bool, func, node, number, oneOf, oneOfType, string } from 'prop-types';
 import { css } from 'emotion';
+import NoScript from 'COMPONENTS/NoScript';
 import { transitionEnd } from 'UTILS/prefixTransition';
 import setTransitionState from 'UTILS/setTransitionState';
 import styles, {
@@ -42,20 +43,27 @@ class AccordionItem extends Component {
     return modifier;
   }
   
-  constructor(props) {
-    const {
-      asyncContent,
-      children,
-      lazyDOM,
-      opened,
-      transitionTime,
-      uid,
-    } = props;
-
+  constructor({
+    asyncContent,
+    asyncNoScriptMsg,
+    children,
+    lazyDOM,
+    opened,
+    transitionTime,
+    uid,
+  }) {
     super();
+    
+    let content = children;
+    
+    if( !opened ) {
+      if( lazyDOM ) content = <NoScript>{children}</NoScript>;
+      else if( asyncContent ) content = <NoScript>{asyncNoScriptMsg}</NoScript>;
+    }
 
     this.state = {
-      content: (!opened || asyncContent, lazyDOM) ? null : children,
+      content,
+      contentLoaded: false,
       contentStyles: undefined,
       loading: false,
       opened,
@@ -165,6 +173,7 @@ class AccordionItem extends Component {
       promise.then((children) => {
         this.setState({
           content: children,
+          contentLoaded: true,
           loading: false,
         }, () => {
           this.executeTransition(true);
@@ -186,17 +195,18 @@ class AccordionItem extends Component {
       lazyDOM,
     } = this.props;
     const {
-      content,
+      contentLoaded,
     } = this.state;
     const checked = this.checkboxRef.checked;
     
     if(
-      (checked && !content)
+      (checked && !contentLoaded)
       && (lazyDOM || asyncContent)
     ){
       if(lazyDOM){
         this.setState({
           content: children,
+          contentLoaded: true,
         }, () => {
           this.executeTransition(checked);
         });
@@ -290,6 +300,10 @@ class AccordionItem extends Component {
 
 AccordionItem.propTypes = {
   asyncContent: func,
+  asyncNoScriptMsg: oneOfType([
+    node,
+    string,
+  ]),
   children: node,
   className: string,
   icon: oneOf([
@@ -309,6 +323,7 @@ AccordionItem.propTypes = {
   uid: string,
 };
 AccordionItem.defaultProps = {
+  asyncNoScriptMsg: 'Sorry, this content can only be viewed when Javascript is enabled',
   className: '',
   icon: ICON__PLUS_MINUS,
   opened: false,

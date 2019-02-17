@@ -72,7 +72,7 @@ export default class App extends Component {
           opened
           uid="accessibility"
         >
-          <p>
+          <p className="note">
             You can <code>TAB</code> onto any item and hit <code>SPACE</code> to
             open or close an item. The content of the item will not
             be <code>TAB</code>-able when the item is closed.
@@ -82,7 +82,7 @@ export default class App extends Component {
           label="No Re-Flow Interference"
           uid="noReFlow"
         >
-          <p>
+          <p className="note">
             Each item calculates it&apos;s transition height only when required. In
             the below example you can toggle it&apos;s <code>max-height</code> then
             toggle the item to see that it expands and closes without issue.
@@ -134,7 +134,7 @@ export default class App extends Component {
           label="Toggle Indicators"
           uid="toggleTypes"
         >
-          <p>
+          <p className="note">
             The default indicators are the plus/minus, but you can also choose
             a <code>chevron</code>, <code>triangle</code>, or <code>none</code>.
             The nice thing about these indicators is that they use Unicode
@@ -161,7 +161,7 @@ export default class App extends Component {
           lazyDOM
           uid="lazyDOM"
         >
-          <p>
+          <p className="note">
             This content won&apos;t be added to the DOM until a user has opened
             this section. You can refresh the page and inspect the DOM before
             and after you open this section.
@@ -170,18 +170,39 @@ export default class App extends Component {
             This option is useful in cases where you may be trying to render
             a large tree of data with many nested nodes.
           </p>
+          <p className="note">
+            When <code>lazyDOM</code> is used during SSR&apos;d content and the
+            user has JS disabled on the page, a <code>noscript</code> tag will
+            be used with the actual content so that things are still usable.
+          </p>
         </AccordionItem>
         <AccordionItem
           asyncContent={() => {
+            if( !window.fetch ){
+              return {
+                then: (cb) => cb(
+                  <p>
+                    Sorry, it looks like your Browser doesn&apos;t
+                    support <code>fetch</code> so this is all you get.
+                  </p>
+                ),
+              };
+            }
+            
             return fetch('https://baconipsum.com/api/?type=meat-and-filler')
               .then(resp => resp.json())
               .then(data => {
                 log.info('Async content', data);
                 return (
                   <Fragment>
-                    <p>
+                    <p className="note">
                       Below is content loaded from <a href="https://baconipsum.com/">baconipsum.com</a>.
                       The content will be cached until you reload the page.
+                    </p>
+                    <p className="note">
+                      If you&apos;re running this example via the development
+                      server, and disable Javascript, you&apos;ll see
+                      a <code>noscript</code> message rendered.
                     </p>
                     { data.map((par, ndx) => <p key={ndx}>{par}</p>) }
                   </Fragment>
@@ -189,6 +210,12 @@ export default class App extends Component {
               })
               .catch(error => log.error(error));
           }}
+          asyncNoScriptMsg={(
+            <p>
+              When a user has Javascript disabled you can inform them that they
+              need to enable Javascript if they want to view Async content.
+            </p>
+          )}
           label="Async Content"
           uid="asyncContent"
         />
