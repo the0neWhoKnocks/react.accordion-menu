@@ -2,7 +2,7 @@ import React from 'react';
 import { mount } from 'enzyme';
 import setTransitionState from 'UTILS/setTransitionState';
 import { transitionEnd } from 'UTILS/prefixTransition';
-import Accordion from './index';
+import AccordionItem from './index';
 import styles, {
   MODIFIER__IS_CLOSING,
   MODIFIER__IS_OPENING,
@@ -11,7 +11,7 @@ import styles, {
 
 jest.mock('UTILS/setTransitionState');
 
-describe('Accordion', () => {
+describe('AccordionItem', () => {
   let wrapper;
   let instance;
 
@@ -20,7 +20,7 @@ describe('Accordion', () => {
   // });
 
   it('should set default state', () => {
-    instance = mount(<Accordion />).instance();
+    instance = mount(<AccordionItem />).instance();
 
     expect(instance.state).toEqual({
       branchData: null,
@@ -39,7 +39,7 @@ describe('Accordion', () => {
       sort: true,
       opened: true,
     };
-    instance = mount(<Accordion { ...branchProps } />).instance();
+    instance = mount(<AccordionItem { ...branchProps } />).instance();
 
     expect(instance.state).toEqual(expect.objectContaining({}));
   });
@@ -59,7 +59,7 @@ describe('Accordion', () => {
         },
         offsetHeight: 0,
       };
-      instance = mount(<Accordion />).instance();
+      instance = mount(<AccordionItem />).instance();
       instance.childrenEl = mockEl;
 
       // Unfortunately JSDom doesn't calculate height so this is just verifying
@@ -78,7 +78,7 @@ describe('Accordion', () => {
       let transitionStateCB;
       let checked;
       let expandedHeight = 100;
-      instance = mount(<Accordion />).instance();
+      instance = mount(<AccordionItem />).instance();
       instance.childrenEl = {
         addEventListener: jest.fn(),
       };
@@ -142,7 +142,7 @@ describe('Accordion', () => {
     let checked;
 
     beforeEach(() => {
-      wrapper = mount(<Accordion />);
+      wrapper = mount(<AccordionItem />);
       instance = wrapper.instance();
       instance.executeTransition = jest.fn();
     });
@@ -189,7 +189,7 @@ describe('Accordion', () => {
 
     beforeEach(() => {
       removeStub = jest.fn();
-      wrapper = mount(<Accordion />);
+      wrapper = mount(<AccordionItem />);
       instance = wrapper.instance();
       instance.childrenEl = {
         removeEventListener: removeStub,
