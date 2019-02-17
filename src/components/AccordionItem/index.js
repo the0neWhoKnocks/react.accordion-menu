@@ -73,7 +73,6 @@ class AccordionItem extends Component {
       uid: uid || (''+performance.now()).replace('.',''),
     };
 
-    this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleToggle = this.handleToggle.bind(this);
   }
   
@@ -147,19 +146,6 @@ class AccordionItem extends Component {
         });
       }
     });
-  }
-  
-  /**
-   * Allows for accessible controls
-   *
-   * @param {Event} ev - keydown
-   */
-  handleKeyDown(ev) {
-    switch(ev.which){
-      case 32: // SPACE
-        this.checkboxRef.click();
-        break;
-    }
   }
   
   /**
@@ -270,14 +256,12 @@ class AccordionItem extends Component {
           id={_uid}
           onChange={this.handleToggle}
           ref={(ref) => { this.checkboxRef = ref; }}
-          tabIndex="-1"
+          tabIndex={tabIndex}
           type="checkbox"
         />
         <label
           className={`${ ROOT_CLASS }__btn`}
           htmlFor={_uid}
-          onKeyDown={this.handleKeyDown}
-          tabIndex={tabIndex}
         >
           <div className={`${ ROOT_CLASS }__btn-label`}>{label}</div>
           {icon !== ICON__NONE && (

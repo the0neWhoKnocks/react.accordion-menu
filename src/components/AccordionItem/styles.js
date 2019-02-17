@@ -53,6 +53,10 @@ const styles = css`
       position: absolute;
       pointer-events: none;
       opacity: 0;
+      
+      &:focus ~ .${ ROOT_CLASS }__btn::before {
+        opacity: 1;
+      }
     }
     
     &__btn {
@@ -128,10 +132,8 @@ const styles = css`
         bottom: 0;
         transition: opacity 0.25s;
       }
-
-      &:focus,
+      
       &:hover {
-        outline: none;
         
         &::before {
           opacity: 1;
